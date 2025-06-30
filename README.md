@@ -2,6 +2,42 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+# 🚀 OneApp — React Web Application
+
+Welcome to **OneApp**, a modern web application built with **React**.  
+This project includes a user-friendly interface, routing, and support for future integrations like payment gateways and dashboards.
+
+## 📂 Project Structure
+
+This React project includes:
+
+- ✅ React frontend
+- ✅ React Router for navigation
+- ✅ Organized components and pages
+- ✅ Custom styling (CSS/Tailwind)
+- ✅ Ready to integrate APIs or backend
+
+  ## ⚙️ Tech Stack
+
+- **Frontend:** React, React Router
+- **Styling:** CSS (or Tailwind CSS, if added)
+- **Deployment:** Firebase Hosting or any hosting provider
+
+  ## 🏁 Getting Started
+
+Clone the repository and run the app locally:
+bash
+# Clone the repo
+git clone https://github.com/Oneappplm/New-OneApp-Payment.git
+
+# Navigate to the project folder
+cd New-OneApp-Payment
+# Install dependencies
+npm install
+
+# Start the development server
+npm start
+
 ## Available Scripts
 
 In the project directory, you can run:
