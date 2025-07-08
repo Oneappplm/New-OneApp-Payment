@@ -15,6 +15,7 @@ const DoctorSignIn = () => {
     const [formData, setFormData] = useState({
         email: "",
         password: "",
+        userType: ""
     });
 
     const handleChange = (e) => {
@@ -25,28 +26,35 @@ const DoctorSignIn = () => {
         }));
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!formData.email || !formData.password) {
-            toast.error("Please enter email and password");
-            return;
-        }
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!formData.email || !formData.password) {
+    toast.error("Please enter email and password");
+    return;
+  }
 
-        setLoading(true);
+  setLoading(true);
 
-        try {
-            // ✅ Replace with your real sign-in API
-            console.log("Signing in with:", formData);
+  try {
+    console.log("Signing in with:", formData);
 
-            // Fake success:
-            toast.success("Sign in successful!");
-            setTimeout(() => navigate("/dashboard"), 1500);
-        } catch (err) {
-            toast.error("Invalid credentials");
-        } finally {
-            setLoading(false);
-        }
-    };
+    // Fake sign-in success
+    toast.success("Sign in successful!");
+
+    setTimeout(() => {
+      if (formData.userType === "Admin") {
+        navigate("/admin");
+      } else {
+        navigate("/"); // Doctor or Patient landing page
+      }
+    }, 1500);
+
+  } catch (err) {
+    toast.error("Invalid credentials");
+  } finally {
+    setLoading(false);
+  }
+};
 
     return (
         <section
@@ -110,6 +118,26 @@ const DoctorSignIn = () => {
                                     required
                                 />
                             </div>
+                            <div>
+                                <label
+                                    htmlFor="userType"
+                                    className="block mb-2 text-md font-medium text-gray-900"
+                                >
+                                    User Type
+                                </label>
+                                <select
+                                    id="userType"
+                                    name="userType"
+                                    value={formData.userType}
+                                    onChange={handleChange}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                                    required
+                                >
+                                    <option value="Doctor">Doctor</option>
+                                    <option value="Patient">Patient</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                            </div>
 
                             <div>
                                 <label
@@ -129,6 +157,7 @@ const DoctorSignIn = () => {
                                     required
                                 />
                             </div>
+
 
                             <button
                                 type="submit"
@@ -155,13 +184,13 @@ const DoctorSignIn = () => {
                                 </a>.
                             </p>
                             <div className="flex justify-center ">
-                            <p className="mb-6 ">Create your doctor account today!</p>
-                            <Link
-                                to="/registration"
-                                className="text-green-700 font-semibold underline"
-                            >
-                                Sign up
-                            </Link>
+                                <p className="mb-6 ">Create your doctor account today!</p>
+                                <Link
+                                    to="/registration"
+                                    className="text-green-700 font-semibold underline"
+                                >
+                                    Sign up
+                                </Link>
                             </div>
                         </form>
                     </div>

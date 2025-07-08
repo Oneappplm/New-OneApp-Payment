@@ -1,159 +1,143 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import ClipLoader from "react-spinners/ClipLoader";
-import MapPicker from "../Components/MapPicker";
+import MapPicker from "../UsableComponents/MapPicker";
 import "react-toastify/dist/ReactToastify.css";
 import BGImage from "../assets/BGImage.jpg";
 import GreenTexture from "../assets/GreenTexture.jpg";
-import SignInBG from "../assets/green_bg.png"; // ✅ Use any image for right side
 
-const DoctorRegistration = () => {
+const Registration = () => {
   const [formData, setFormData] = useState({
+    role: "Doctor",
     fullName: "",
-    specialty: "",
-    licenseNumber: "",
     email: "",
-    country: "us",
     phoneNumber: "",
     password: "",
     confirmPassword: "",
+    country: "US",
+    specialty: "",
+    licenseNumber: "",
     profilePicture: "",
     clinicName: "",
     clinicAddress: "",
     location: "",
+    dateOfBirth: "",
+    gender: "",
+    emergencyContact: "",
+    medicalHistory: "",
+    currentMedications: "",
+    insuranceInformation: "",
+    allergies: "",
+    address: "",
+    adminNotes: "",
   });
 
   const [showMap, setShowMap] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
   const [countryList] = useState([
     { code: "US", name: "United States", dialCode: "+1" },
     { code: "UK", name: "United Kingdom", dialCode: "+44" },
     { code: "CA", name: "Canada", dialCode: "+1" },
     { code: "AUS", name: "Australia", dialCode: "+61" },
     { code: "IND", name: "India", dialCode: "+91" },
-    { code: "DE", name: "Germany", dialCode: "+49" },
-    { code: "FRA", name: "France", dialCode: "+33" },
-    { code: "JP", name: "Japan", dialCode: "+81" },
-    { code: "CN", name: "China", dialCode: "+86" },
-    { code: "BR", name: "Brazil", dialCode: "+55" },
   ]);
 
   const [selectedCountryCode, setSelectedCountryCode] = useState("+1");
 
   useEffect(() => {
-    const selectedCountry = countryList.find(
-      (country) => country.code === formData.country
-    );
-    if (selectedCountry) {
-      setSelectedCountryCode(selectedCountry.dialCode);
-    }
-  }, [formData.country, countryList]);
+    const selected = countryList.find((c) => c.code === formData.country);
+    if (selected) setSelectedCountryCode(selected.dialCode);
+  }, [formData.country]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
     if (name === "country") {
-      const selectedCountry = countryList.find(
-        (country) => country.code === value
-      );
-      const newDialCode = selectedCountry ? selectedCountry.dialCode : "";
-
-      // Remove existing dial code if present
-      const currentNumber = formData.phoneNumber.replace(/^\+\d+\s*/, "");
-
+      const selected = countryList.find((c) => c.code === value);
+      const dialCode = selected ? selected.dialCode : "";
+      const localNumber = formData.phoneNumber.replace(/^\+\d+\s*/, "");
       setFormData({
         ...formData,
         country: value,
-        phoneNumber: `${newDialCode} ${currentNumber}`.trim(),
+        phoneNumber: `${dialCode} ${localNumber}`.trim(),
       });
-      setSelectedCountryCode(newDialCode);
-
+      setSelectedCountryCode(dialCode);
     } else if (name === "profilePicture" && files) {
-      const file = files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setFormData({ ...formData, [name]: reader.result });
-        };
-        reader.readAsDataURL(file);
-      } else {
-        setFormData({ ...formData, [name]: "" });
-      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, profilePicture: reader.result });
+      };
+      reader.readAsDataURL(files[0]);
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
 
-
   const validateForm = () => {
-    if (!formData.fullName.trim()) return toast.error("Full Name is required");
-    if (!formData.specialty.trim()) return toast.error("Specialty is required");
-    if (!formData.licenseNumber.trim())
-      return toast.error("License Number is required");
-    if (!formData.email.trim()) return toast.error("Email is required");
-    if (!formData.phone.trim()) return toast.error("Phone Number is required");
-    if (!formData.password.trim()) return toast.error("Password is required");
+    if (!formData.email) return toast.error("Email is required");
+    if (!formData.password) return toast.error("Password is required");
     if (formData.password !== formData.confirmPassword)
       return toast.error("Passwords do not match");
-    if (!formData.clinicName.trim())
-      return toast.error("Clinic Name is required");
-    if (!formData.clinicAddress.trim())
-      return toast.error("Clinic Address is required");
-    if (!formData.location.trim()) return toast.error("Location is required");
+
+    if (!formData.fullName) return toast.error("Full Name is required");
+    if (!formData.phoneNumber) return toast.error("Phone Number is required");
+
+    if (formData.role === "Doctor") {
+      if (!formData.specialty) return toast.error("Specialty is required");
+      if (!formData.licenseNumber) return toast.error("License Number is required");
+      if (!formData.clinicName) return toast.error("Clinic Name is required");
+      if (!formData.clinicAddress) return toast.error("Clinic Address is required");
+      if (!formData.location) return toast.error("Clinic Location required");
+    }
+    if (formData.role === "Patient") {
+      if (!formData.dateOfBirth) return toast.error("Date of Birth required");
+      if (!formData.gender) return toast.error("Gender required");
+      if (!formData.emergencyContact) return toast.error("Emergency Contact required");
+      if (!formData.address) return toast.error("Address required");
+    }
+
     return true;
   };
 
-  // ✅ Add this INSIDE handleSubmit, instead of just using formData.phoneNumber
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setLoading(true);
 
-    // ✅ Find dial code again (to be extra safe)
-    const selectedCountry = countryList.find(
-      (country) => country.code === formData.country
-    );
-    const dialCode = selectedCountry ? selectedCountry.dialCode : "";
+    const selected = countryList.find((c) => c.code === formData.country);
+    const dialCode = selected ? selected.dialCode : "";
+    const finalPhone = `${dialCode}${formData.phoneNumber}`;
 
-    // ✅ Combine dial code + local number
-    const fullPhoneNumber = `${dialCode}${formData.phoneNumber}`;
-
-    // ✅ Now you can send this:
-    const finalData = {
-      ...formData,
-      phoneNumber: fullPhoneNumber,
-    };
+    const finalData = { ...formData, phoneNumber: finalPhone };
 
     try {
-      console.log("Submitting", finalData);
-      toast.success("Doctor account created!");
-      setTimeout(() => navigate("/"), 2000);
+      console.log("Submitted Data: ", finalData);
+      toast.success(`${formData.role} account created!`);
+      setTimeout(() => navigate("/"), 1500);
     } catch (err) {
       toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }
   };
+
   const [gpsCoords, setGpsCoords] = useState(null);
 
   const handleUseGPS = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const { latitude, longitude } = pos.coords;
-          setGpsCoords([latitude, longitude]);
-          setShowMap(true);
-        },
-        (err) => {
-          toast.error("Unable to get your location");
-        }
-      );
-    } else {
-      toast.error("Geolocation is not supported by your browser");
-    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setGpsCoords([latitude, longitude]);
+        setShowMap(true);
+      },
+      () => toast.error("Unable to get your location")
+    );
   };
 
   return (
@@ -163,267 +147,168 @@ const DoctorRegistration = () => {
     >
       <ToastContainer />
       <div
-        className="w-full max-w-5xl p-4 rounded-r-lg"
+        className="w-full max-w-4xl p-4 rounded-lg"
         style={{
           backgroundImage: `url(${GreenTexture})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
-        <div className=" backdrop-blur-sm p-4 md:p-4 rounded-lg">
-
-          <div className="flex justify-center items-center mb-4">
-            <h1 className="text-3xl font-bold text-green-800">OneApp</h1>
-          </div>
-          <h2 className="text-xl font-bold text-green-800 mb-4 text-center">
-            Doctor Registration
-          </h2>
+        <div className="backdrop-blur-sm p-4 rounded-lg">
+          <h1 className="text-3xl font-bold text-green-800 mb-4 text-center">
+            OneApp Registration
+          </h1>
 
           <form
             onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            className="grid gap-4"
           >
-            <div className="space-y-4">
+            {/* Common Fields */}
+            <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block mb-1 text-md font-medium text-gray-900">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  className="w-full border border-green-300 text-gray-900 text-sm rounded-lg p-2.5"
-                  placeholder="Dr. John Doe"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block mb-1 text-md font-medium text-gray-900">
-                  Specialty
-                </label>
-                <input
-                  type="text"
-                  name="specialty"
-                  value={formData.specialty}
-                  onChange={handleChange}
-                  className="w-full border border-green-300 text-gray-900 text-sm rounded-lg p-2.5"
-                  placeholder="Cardiologist"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block mb-1 text-md font-medium text-gray-900">
-                  License Number
-                </label>
-                <input
-                  type="text"
-                  name="licenseNumber"
-                  value={formData.licenseNumber}
-                  onChange={handleChange}
-                  className="w-full border border-green-300 text-gray-900 text-sm rounded-lg p-2.5"
-                  placeholder="LIC123456"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block mb-1 text-md font-medium text-gray-900">
-                  Email
-                </label>
+                <label>Email</label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full border border-green-300 text-gray-900 text-sm rounded-lg p-2.5"
-                  placeholder="doctor@example.com"
-                  required
+                  className="w-full border p-2 rounded"
+                  placeholder="Email"
                 />
               </div>
 
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Phone Number
-                </label>
-                <div className="flex">
-                  <select
-                    name="country"
-                    value={formData.country}
-                    onChange={handleChange}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-l-lg focus:ring-primary-600 focus:border-primary-600 block w-1/6 p-2.5"
-                  >
-                    {countryList.map((country) => (
-                      <option key={country.name} value={country.code}>
-                        {country.code}
-                      </option>
-                    ))}
-                  </select>
-
-                  <input
-                    type="tel"
-                    name="phoneNumber"
-                    id="phoneNumber"
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                    className="bg-gray-50 border border-l-0 border-gray-300 text-gray-900 text-sm rounded-r-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
-                    placeholder="+1 234 567 8900"
-                  />
-                </div>
-              </div>
-
-
-              <div>
-                <label className="block mb-1 text-md font-medium text-gray-900">
-                  Profile Picture
-                </label>
-                <input
-                  type="file"
-                  name="profilePicture"
-                  accept="image/*"
-                  onChange={handleChange}
-                  className="w-full"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block mb-1 text-md font-medium text-gray-900">
-                  Password
-                </label>
+                <label>Password</label>
                 <input
                   type="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full border border-green-300 text-gray-900 text-sm rounded-lg p-2.5"
-                  placeholder="••••••••"
-                  required
+                  className="w-full border p-2 rounded"
+                  placeholder="Password"
                 />
               </div>
-
               <div>
-                <label className="block mb-1 text-md font-medium text-gray-900">
-                  Confirm Password
-                </label>
+                <label>Role</label>
+                <select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  className="w-full border p-2 rounded"
+                >
+                  <option value="Doctor">Doctor</option>
+                  <option value="Patient">Patient</option>
+                  <option value="Admin">Admin</option>
+                </select>
+              </div>
+              <div>
+                <label>Confirm Password</label>
                 <input
                   type="password"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full border border-green-300 text-gray-900 text-sm rounded-lg p-2.5"
-                  placeholder="••••••••"
-                  required
+                  className="w-full border p-2 rounded"
+                  placeholder="Confirm Password"
+                />
+              </div>
+
+
+
+              {/* Common Name and Phone */}
+              <div>
+                <label>Full Name</label>
+                <input
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  className="w-full border p-2 rounded"
+                  placeholder="Full Name"
                 />
               </div>
 
               <div>
-                <label className="block mb-1 text-md font-medium text-gray-900">
-                  Clinic Name
-                </label>
-                <input
-                  type="text"
-                  name="clinicName"
-                  value={formData.clinicName}
-                  onChange={handleChange}
-                  className="w-full border border-green-300 text-gray-900 text-sm rounded-lg p-2.5"
-                  placeholder="OneApp Clinic"
-                  required
-                />
+                <label>Phone</label>
+                <div className="flex">
+                  <select
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    className="border p-2 rounded-l w-1/4"
+                  >
+                    {countryList.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.code}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
+                    className="border p-2 rounded-r w-full"
+                    placeholder="1234567890"
+                  />
+                </div>
               </div>
-
-              <div>
-                <label className="block mb-1 text-md font-medium text-gray-900">
-                  Clinic Address
-                </label>
-                <input
-                  type="text"
-                  name="clinicAddress"
-                  value={formData.clinicAddress}
-                  onChange={handleChange}
-                  className="w-full border border-green-300 text-gray-900 text-sm rounded-lg p-2.5"
-                  placeholder="123 Main St, City"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block mb-1 text-md font-medium text-gray-900">
-                  Clinic Location
-                </label>
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  className="w-full border border-green-300 text-gray-900 text-sm rounded-lg p-2.5"
-                  placeholder="Geo-location or use GPS"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => handleUseGPS()}
-                  className="mt-1 text-green-600 underline text-sm"
-                >
-                  📍 Use GPS | pick on map
-                </button>
-              </div>
-
-
-
             </div>
 
-            <div className="col-span-1 md:col-span-2">
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-green-700 hover:bg-green-800 text-white font-medium rounded-lg text-md py-2.5 text-center"
-              >
-                {loading ? (
-                  <>
-                    <ClipLoader size={20} color="#ffffff" /> Creating...
-                  </>
-                ) : (
-                  "Create Doctor Account"
-                )}
-              </button>
-            </div>
-            <Link
-              to="/"
-              className="text-black font-semibold text-md text-end "
+            {/* Conditional Grid: Doctor & Patient = 2 cols, Admin = 1 col */}
+            <div
+              className={`grid gap-4 ${formData.role === "Admin" ? "grid-cols-1" : "md:grid-cols-2"
+                }`}
             >
-              Already have an account? <span className="text-green-700 underline">Sign in</span>
-            </Link>
+              {formData.role === "Doctor" && (
+                <>
+                  <input placeholder="Specialty" name="specialty" value={formData.specialty} onChange={handleChange} className="w-full border p-2 rounded" />
+                  <input placeholder="License Number" name="licenseNumber" value={formData.licenseNumber} onChange={handleChange} className="w-full border p-2 rounded" />
+                  <input type="file" name="profilePicture" onChange={handleChange} className="w-full" />
+                  <input placeholder="Clinic Name" name="clinicName" value={formData.clinicName} onChange={handleChange} className="w-full border p-2 rounded" />
+                  <input placeholder="Clinic Address" name="clinicAddress" value={formData.clinicAddress} onChange={handleChange} className="w-full border p-2 rounded" />
+                  <input placeholder="Clinic Location" name="location" value={formData.location} onChange={handleChange} className="w-full border p-2 rounded" />
+                  <button
+                    type="button"
+                    onClick={handleUseGPS}
+                    className="text-green-700 underline text-sm"
+                  >
+                    📍 Use GPS | Pick on Map
+                  </button>
+                </>
+              )}
+
+              {formData.role === "Patient" && (
+                <>
+                  <input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} className="w-full border p-2 rounded" />
+                  <input placeholder="Gender" name="gender" value={formData.gender} onChange={handleChange} className="w-full border p-2 rounded" />
+                  <input placeholder="Emergency Contact" name="emergencyContact" value={formData.emergencyContact} onChange={handleChange} className="w-full border p-2 rounded" />
+                  <textarea placeholder="Medical History" name="medicalHistory" value={formData.medicalHistory} onChange={handleChange} className="w-full border p-2 rounded" />
+                  <textarea placeholder="Current Medications" name="currentMedications" value={formData.currentMedications} onChange={handleChange} className="w-full border p-2 rounded" />
+                  <input placeholder="Insurance Information" name="insuranceInformation" value={formData.insuranceInformation} onChange={handleChange} className="w-full border p-2 rounded" />
+                  <textarea placeholder="Allergies" name="allergies" value={formData.allergies} onChange={handleChange} className="w-full border p-2 rounded" />
+                  <input placeholder="Address" name="address" value={formData.address} onChange={handleChange} className="w-full border p-2 rounded" />
+                </>
+              )}
+
+              {formData.role === "Admin" && (
+                <textarea placeholder="Admin Notes" name="adminNotes" value={formData.adminNotes} onChange={handleChange} className="w-full border p-2 rounded" />
+              )}
+            </div>
+
+            <button type="submit" disabled={loading} className="w-full bg-green-700 text-white py-2 rounded">
+              {loading ? <ClipLoader size={20} color="#fff" /> : "Register"}
+            </button>
           </form>
-        </div>
 
-        {/* Right Side */}
-        {/* <div className="hidden md:block w-1/2 relative">
-          <img
-            src={SignInBG}
-            alt="Register BG"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-green-900 bg-opacity-50 flex flex-col items-center justify-center text-white p-8">
-            <h2 className="text-3xl font-bold mb-4">Welcome to OneApp!</h2>
-            <p className="mb-6">
-              Join OneApp to manage your practice seamlessly.
-            </p>
-            <Link
-              to="/signin"
-              className="text-green-300 font-semibold underline"
-            >
-              Already have an account? Sign in
-            </Link>
-          </div>
-        </div> */}
+
+          <Link to="/login" className="block text-center mt-4 text-green-700 underline">
+            Already have an account? Sign in
+          </Link>
+        </div>
       </div>
-      {showMap && (
+
+ {showMap && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
-          <div className="bg-white rounded-lg shadow-lg p-4 w-full max-w-2xl">
+          <div className="bg-white rounded-lg shadow-lg p-4 w-full max-w-xl">
             <h3 className="text-lg font-semibold mb-2">Pick Clinic Location</h3>
             <div className="h-[400px] w-full overflow-hidden rounded">
               <MapPicker
@@ -443,10 +328,8 @@ const DoctorRegistration = () => {
           </div>
         </div>
       )}
-
-
     </section>
   );
 };
 
-export default DoctorRegistration;
+export default Registration;
