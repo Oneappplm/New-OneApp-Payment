@@ -26,35 +26,35 @@ const DoctorSignIn = () => {
         }));
     };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!formData.email || !formData.password) {
-    toast.error("Please enter email and password");
-    return;
-  }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!formData.email || !formData.password) {
+            toast.error("Please enter email and password");
+            return;
+        }
 
-  setLoading(true);
+        setLoading(true);
 
-  try {
-    console.log("Signing in with:", formData);
+        try {
+            console.log("Signing in with:", formData);
 
-    // Fake sign-in success
-    toast.success("Sign in successful!");
+            // Fake sign-in success
+            toast.success("Sign in successful!");
 
-    setTimeout(() => {
-      if (formData.userType === "Admin") {
-        navigate("/admin");
-      } else {
-        navigate("/"); // Doctor or Patient landing page
-      }
-    }, 1500);
+            setTimeout(() => {
+                if (formData.userType === "Admin") {
+                    navigate("/admin");
+                } else {
+                    navigate("/"); // Doctor or Patient landing page
+                }
+            }, 1500);
 
-  } catch (err) {
-    toast.error("Invalid credentials");
-  } finally {
-    setLoading(false);
-  }
-};
+        } catch (err) {
+            toast.error("Invalid credentials");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <section
@@ -184,12 +184,24 @@ const handleSubmit = async (e) => {
                                 </a>.
                             </p>
                             <div className="flex justify-center ">
-                                <p className="mb-6 ">Create your doctor account today!</p>
+                                <p className=" ">Create your doctor account today!</p>
                                 <Link
                                     to="/registration"
                                     className="text-green-700 font-semibold underline"
                                 >
                                     Sign up
+                                </Link>
+                            </div>
+                            <div className="flex justify-center gap-2 mb-6">
+                                <p className="text-sm text-gray-500 mt-1">
+                                    Learn more on our <Link to="/about-us" className="text-green-700 underline">About Us</Link> page.
+                                </p>
+
+                                <Link
+                                    to="/about-us"
+                                    className="text-green-700 font-semibold hover:underline"
+                                >
+                                    About Us
                                 </Link>
                             </div>
                         </form>

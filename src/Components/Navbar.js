@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import LogoOne from "../assets/Logo.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,16 +22,22 @@ const Navbar = () => {
   return (
     <nav className="w-full fixed top-0 z-50">
       <div
-        className={`mx-auto px-4 py-3 flex justify-between items-center transition-all duration-300 ${
-          isDark
+        className={`mx-auto px-2 py-1 flex justify-between items-center transition-all duration-300 ${isDark
             ? "bg-[#0f172a] text-white"
             : "bg-white text-gray-800 shadow-lg "
-        }`}
+          }`}
       >
         {/* Logo */}
-        <Link to="/" className="text-lg font-semibold tracking-wide">
-          OneApp
-        </Link>
+        <div className="relative flex flex-row items-center md:pl-12">
+          <img
+            src={LogoOne}
+            alt="Doctor team working"
+            className="w-20 h-20 rounded-xl object-cover"
+          />
+          <Link to="/" className="text-3xl font-semibold tracking-wide">
+            OneApp
+          </Link>
+        </div>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-6 font-medium">
@@ -43,11 +50,10 @@ const Navbar = () => {
           {/* Contact Us Button */}
           <Link
             to="/login"
-            className={`px-4 py-2 rounded-full transition-all text-sm font-semibold ${
-              isDark
+            className={`px-4 py-2 rounded-full transition-all text-sm font-semibold ${isDark
                 ? "bg-blue-600 hover:bg-blue-700 text-white"
                 : "bg-white border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
-            }`}
+              }`}
           >
             Login
           </Link>
@@ -100,9 +106,8 @@ const Navbar = () => {
 
       {/* Mobile Dropdown */}
       <div
-        className={`md:hidden transition-all duration-300 ease-in-out overflow-hidden ${
-          isOpen ? "max-h-[300px] opacity-100" : "max-h-0 opacity-0"
-        } ${isDark ? "bg-[#0f172a] text-white" : "bg-white text-gray-800"} px-6 pt-2 pb-4 space-y-2`}
+        className={`md:hidden transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "max-h-[300px] opacity-100" : "max-h-0 opacity-0"
+          } ${isDark ? "bg-[#0f172a] text-white" : "bg-white text-gray-800"} px-6 pt-2 pb-4 space-y-2`}
       >
         <Link to="/about" onClick={() => setIsOpen(false)} className="block">About Us</Link>
         <Link to="/solutions" onClick={() => setIsOpen(false)} className="block">Solutions</Link>
@@ -112,11 +117,10 @@ const Navbar = () => {
         <Link
           to="/login"
           onClick={() => setIsOpen(false)}
-          className={`inline-block px-4 py-2 rounded-full text-sm font-semibold ${
-            isDark
+          className={`inline-block px-4 py-2 rounded-full text-sm font-semibold ${isDark
               ? "bg-blue-600 hover:bg-blue-700 text-white"
               : "bg-white border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
-          }`}
+            }`}
         >
           Login
         </Link>

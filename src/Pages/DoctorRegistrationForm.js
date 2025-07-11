@@ -299,14 +299,33 @@ const Registration = () => {
             </button>
           </form>
 
+          <div className="pt-4">
+            <div className="flex items-center gap-2">
+              <p >
+                We suggest visiting <Link to="/about-us" className="text-green-700 underline">About Us</Link> to learn more before signing up.
+              </p>
 
-          <Link to="/login" className="block text-center mt-4 text-green-700 underline">
-            Already have an account? Sign in
-          </Link>
+              <Link
+                to="/about-us"
+                className="text-green-700 font-semibold hover:underline"
+              >
+                About Us
+              </Link>
+            </div>
+            <div className="flex items-center gap-2">
+              <p>Already have an account?</p>
+              <Link
+                to="/login"
+                className="text-green-700 font-semibold underline"
+              >
+                Sign in
+              </Link>
+            </div>
+
+          </div>
         </div>
       </div>
-
- {showMap && (
+      {showMap && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
           <div className="bg-white rounded-lg shadow-lg p-4 w-full max-w-xl">
             <h3 className="text-lg font-semibold mb-2">Pick Clinic Location</h3>

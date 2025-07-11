@@ -19,6 +19,7 @@ import TransactionLogs from "./Pages/admin/TransactionLogs";
 import AuditLogs from "./Pages/admin/AuditLogs";
 import SecuritySettings from "./Pages/admin/SecuritySettings";
 import PatientsManagement from "./Pages/admin/PatientsManagement";
+import AboutMedversant from "./Pages/AboutUs";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -30,6 +31,7 @@ const router = createBrowserRouter(
       {/* ✅ Doctor protected routes */}
       <Route element={<LayoutWithNavbar />}>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/about-us" element ={<AboutMedversant/>}/>
         {/* <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/appointments" element={<Appointments />} />
         <Route path="/profile" element={<Profile />} /> */}
